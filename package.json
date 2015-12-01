@@ -1,0 +1,24 @@
+{
+  "name": "csshelp",
+  "version": "0.0.1",
+  "description": "CSSHelp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rise2semi/csshelp.git"
+  },
+  "author": "Borys Semerenko <rise2semi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rise2semi/csshelp/issues"
+  },
+  "homepage": "https://github.com/rise2semi/csshelp#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "css": "^2.2.1",
+    "yargs": "^3.30.0"
+  }
+}
