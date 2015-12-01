@@ -1,0 +1,132 @@
+/**
+ * @csshelp
+ * @title Stars rating (rating with 5 star icons should be added into FORM tag)
+ * @example
+ *   <div class="stars">
+ *       <input type="radio" name="star" class="star-1" id="star-1" />
+ *       <label class="star-1" for="star-1">1</label>
+ *       <input type="radio" name="star" class="star-2" id="star-2" />
+ *       <label class="star-2" for="star-2">2</label>
+ *       <input type="radio" name="star" class="star-3" id="star-3" />
+ *       <label class="star-3" for="star-3">3</label>
+ *       <input type="radio" name="star" class="star-4" id="star-4" />
+ *       <label class="star-4" for="star-4">4</label>
+ *       <input type="radio" name="star" class="star-5" id="star-5" />
+ *       <label class="star-5" for="star-5">5</label>
+ *       <span></span>
+ *   </div>
+ */
+.stars {
+    background: url("https://dl.dropboxusercontent.com/u/683504/www.codepen.io/stars.png") repeat-x 0 0;
+    width: 150px;
+}
+
+/**
+ * Any style
+ */
+.stars:before,
+.stars:after {
+    display: table;
+    content: '';
+}
+
+.stars:after {
+    clear: both;
+}
+
+.stars input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.stars input[type="radio"].star-5:checked ~ span {
+    width: 100%;
+}
+
+.stars input[type="radio"].star-4:checked ~ span {
+    width: 80%;
+}
+
+.stars input[type="radio"].star-3:checked ~ span {
+    width: 60%;
+}
+
+.stars input[type="radio"].star-2:checked ~ span {
+    width: 40%;
+}
+
+/**
+ * @csshelp
+ * @title Stars rating checked 1 star
+ * @group buttons
+ * @example
+ *   <div class="stars">
+ *       <input type="radio" name="star" class="star-1" checked />
+ *       <label class="star-1" for="star-1">1</label>
+ *       <span></span>
+ *   </div>
+ */
+.stars input[type="radio"].star-1:checked ~ span {
+    width: 20%;
+}
+
+/**
+  @csshelp
+  @title Stars rating checked 1 star
+  @group buttons
+  @example
+    <div class="stars">
+        <input type="radio" name="star" class="star-1" checked />
+        <label class="star-1" for="star-1">1</label>
+        <span></span>
+    </div>
+ */
+.stars label {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 0!important;
+    padding: 0!important;
+    text-indent: -999em;
+    float: left;
+    position: relative;
+    z-index: 10;
+    background: transparent!important;
+    cursor: pointer;
+}
+
+.stars label:hover ~ span {
+    background-position: 0 -30px;
+}
+
+.stars label.star-5:hover ~ span {
+    width: 100% !important;
+}
+
+.stars label.star-4:hover ~ span {
+    width: 80% !important;
+}
+
+.stars label.star-3:hover ~ span {
+    width: 60% !important;
+}
+
+.stars label.star-2:hover ~ span {
+    width: 40% !important;
+}
+
+.stars label.star-1:hover ~ span {
+    width: 20% !important;
+}
+
+.stars span {
+    display: block;
+    width: 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 30px;
+    background: url("https://dl.dropboxusercontent.com/u/683504/www.codepen.io/stars.png") repeat-x 0 -60px;
+    -webkit-transition: -webkit-width 0.5s;
+    transition: width 0.5s;
+}
