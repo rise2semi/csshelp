@@ -1,6 +1,5 @@
 var argv = require('yargs').argv;
 var colors = require('colors');
-var css = require('css');
 var fs = require('fs');
 
 /**
@@ -32,65 +31,154 @@ if ( !argv.src ) {
 }
 
 /**
+ * Constructor
+ */
+function CSSHelp( styles, src, template ) {
+    this.styles = styles;
+    this.src = src;
+    this.template = template;
+
+    /**
+     * Container for content
+     */
+    this.fileContent = {
+        'General': ''
+    };
+}
+
+/**
  * Parse source file
  */
-var styles = css.parse( fs.readFileSync( argv.src, { encoding: 'utf8' } ) );
+CSSHelp.prototype.getSrcContent = function () {
+    return fs.readFileSync( this.src, { encoding: 'utf8' } );
+};
 
 /**
- * Container for content
+ * Parse all comments in source file
  */
-var fileContent = '';
+CSSHelp.prototype.parseComments = function ( srcContent ) {
+    return srcContent.match(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(\/\/.*)/g);
+};
 
 /**
- * Go throw all rules to find content for documentation file
+ * Get title option
  */
-styles.stylesheet.rules.forEach(function ( rule ) {
+CSSHelp.prototype.getTitle = function ( commentContent ) {
+    var title = commentContent.match(/@title([\s\S]*?)(?=@group|@example|@code|$)/);
 
-    /**
-     * Skip all types except comments
-     */
-    if ( rule.type !== 'comment' ) {
-        return;
-    }
-
-    /**
-     * Skip comments without @csshelp label
-     */
-    if ( rule.comment.indexOf('@csshelp') === -1 ) {
-        return;
-    }
-
-    var commentContent = rule.comment.trim();
-
-    var title = commentContent.match(/@title([\s\S]*?)(?=@group|@example|$)/);
-    var codeExample = commentContent.match(/@example([\s\S]*?)(?=@group|@title|$)/);
-
-    /**
-     * Exclude examples without @title or @example
-     */
-    if ( !title[1] || !codeExample ) {
-        return;
-    }
-
-    title = title[1].trim().replace(/\r\n.*\*/g, '\r\n');
-    codeExample = codeExample[1].replace(/\r\n.*\*/g, '\r\n');
-
-    fileContent += template.fileBlock
-                    .replace('{{title}}', title )
-                    .replace('{{code}}', codeExample.replace(/</g, '&lt;').replace(/>/g, '&gt;') )
-                    .replace('{{example}}', codeExample );
-});
+    return ( title && title[1] ) ? title[1].replace(/\r\n.*\*/g, '\r\n').trim() : null;
+};
 
 /**
- * Add content into template
+ * Get group option
  */
-var generatedFile = template.fileTemplate
-                        .replace('{{include}}', argv.include )
-                        .replace('{{content}}', fileContent );
+CSSHelp.prototype.getGroup = function ( commentContent ) {
+    var group = commentContent.match(/@group([\s\S]*?)(?=@code|@title|@example|$)/);
+
+    return ( group && group[1] ) ? group[1].replace(/\r\n.*\*/g, '\r\n').trim() : null;
+};
+
+/**
+ * Get code option
+ */
+CSSHelp.prototype.getCode = function ( commentContent ) {
+    var code = commentContent.match(/@code([\s\S]*?)(?=@group|@title|@example|$)/);
+
+    return ( code && code[1] ) ? code[1].replace(/\r\n.*\*/g, '\r\n').trim() : null;
+};
+
+/**
+ * Get example option
+ */
+CSSHelp.prototype.getExample = function ( commentContent ) {
+    var example = commentContent.match(/@example([\s\S]*?)(?=@group|@title|@code|$)/);
+
+    return ( example && example[1] ) ? example[1].replace(/\r\n.*\*/g, '\r\n').trim() : null;
+};
+
+/**
+ * Go throw all comments to find content for documentation file
+ */
+CSSHelp.prototype.iterateComments = function ( comments ) {
+    comments.forEach(function ( comment ) {
+
+        /**
+         * Skip comments without @csshelp label
+         */
+        if ( comment.indexOf('@csshelp') === -1 ) {
+            return;
+        }
+
+        var commentContent = comment.replace(/\/\*/, '').replace(/\*\//, '').trim();
+
+        var title = this.getTitle( commentContent );
+        var example = this.getExample( commentContent );
+        var code = this.getCode( commentContent );
+        var group = this.getGroup( commentContent );
+
+        /**
+         * Exclude examples without @title or @example
+         */
+        if ( !title || !example ) {
+            return;
+        }
+
+        if ( group && !this.fileContent[ group ] ) {
+            this.fileContent[ group ] = '';
+        }
+
+        this.fileContent[ group || 'General' ] += this.template.fileBlock
+            .replace('{{title}}', title )
+            .replace('{{code}}', (( code )
+                ? code.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                : example.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            ))
+            .replace('{{example}}', example );
+
+    }.bind( this ));
+};
+
+/**
+ * Process source
+ */
+CSSHelp.prototype.process = function () {
+    var srcContent = this.getSrcContent();
+    var comments = this.parseComments( srcContent );
+
+    this.iterateComments( comments );
+    this.save();
+};
 
 /**
  * Save generated file
  */
-fs.writeFileSync( config.generatedFile, generatedFile );
+CSSHelp.prototype.save = function () {
+    var generatedContent = '';
+
+    for ( var group in this.fileContent ) {
+        if ( !this.fileContent.hasOwnProperty( group ) ) {
+            return
+        }
+
+        generatedContent += this.template.headerBlock.replace('{{title}}', group );
+        generatedContent += this.fileContent[ group ];
+    }
+
+    /**
+     * Add content into template
+     */
+    var generatedFile = this.template.fileTemplate
+        .replace('{{include}}', this.styles )
+        .replace('{{content}}', generatedContent );
+
+    fs.writeFileSync( config.generatedFile, generatedFile );
+};
+
+/**
+ * Create CSSHelp instance
+ */
+var csshelp = new CSSHelp( argv.include, argv.src, template );
+
+csshelp.process();
 
 console.log( successMessage );

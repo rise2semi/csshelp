@@ -5,9 +5,10 @@ var fileTemplateContent =
     '    <meta charset="utf-8">\r\n' +
     '    <title>CSSHelp</title>\r\n' +
     '    <style>\r\n' +
-    '        .code { float: left; width: 50% }' +
-    '        .example { float: right; width: 50% }' +
-    '        .block:after { display: block; content: ""; clear: both }' +
+    '        .code { float: left; width: 50% }\r\n' +
+    '        .example { float: right; width: 50% }\r\n' +
+    '        .block:after { display: block; content: ""; clear: both }\r\n' +
+    '        .header { background-color: grey; }\r\n' +
     '    </style>\r\n' +
     '<link rel="stylesheet" href="{{include}}">\r\n' +
     '</head>\r\n' +
@@ -26,7 +27,13 @@ var fileBlockContent =
     '    <div class="example">{{example}}</div>\r\n' +
     '</div>\r\n';
 
+var headerBlockContent =
+    '<div class="header">\r\n' +
+    '    <h4>{{title}}</h4>\r\n'+
+    '</div>\r\n';
+
 module.exports = {
     fileTemplate: fileTemplateContent,
-    fileBlock: fileBlockContent
+    fileBlock: fileBlockContent,
+    headerBlock: headerBlockContent
 };
