@@ -1,0 +1,281 @@
+@import _variables.sass
+@import _mixin.sass
+
+
+html, 
+body
+    width: 100%
+    height: 100%
+    overflow: hidden
+    
+
+body
+    font:
+        weight: normal
+        style: normal
+        size: 12px
+        family: Aria, Helvetica, sans-serif
+    line-height: 18px
+    color: $text
+    min-width: 940px
+
+    padding: 0
+    margin: 0
+
+    //background: url('../images/pattern/wood.png') 0 0 repeat
+    //background: url('../images/pattern/outlets_l.png') 0 0 repeat
+
+    background: $background-body
+
+    //text-rendering: optimizeSpeed        // -> сделает приоритет на максимально быстрый рендеринг. Будут отключены лигатуры и кернинг
+    //text-rendering: optimizeLegibility  -> приведет к разрешению использовать лигатуры и кернинг, а также увеличению времени отрисовки текста.
+    text-rendering: geometricPrecision
+    // -> optimizeLegibility + уделяет большее внимание геометрическим пропорциями букв.
+
+    
+
+/**
+ *   header.css
+ */
+
+.app-header
+    display: block
+    height: $header__height
+    line-height: 21px
+
+.logo-cssdoc
+    display: inline-block
+    vertical-align: top
+    color: #ffffff
+    font-size: 40px
+    line-height: 40px
+    padding: 15px
+    text-decoration: none
+
+    
+
+.app-layout
+    position: absolute
+    top: $header__height
+    bottom: 0
+    left: 0
+    right: 0
+    overflow: hidden
+    
+
+.sidebar
+    position: relative
+    float: left
+    width: $sidebar__width
+    height: 100%
+    padding: 0 10px
+
+    
+
+.item-sidebar
+    position: relative
+    display: block
+    width: 50px
+    height: 50px
+    margin: 10px 0 20px
+    color: #fff
+    text-align: center
+    background: #222
+
+    +round(50px)
+
+    &:before
+        position: absolute
+        top: 0
+        right: 0
+        width: 50px
+        height: 50px
+        +box-shadow(inset 0 0 11px rgba(0, 0, 0, .75))
+        +round(50px)
+        content: ''
+        z-index: 1
+        
+
+    &:hover
+        &:before
+            +box-shadow(inset 0 0 10px $color-shadow-hover-form)
+            
+        
+
+    [class^="icon-"]
+        position: absolute
+        +boxcenter(20px,20px)
+        
+
+    .tinycon
+        z-index: 2
+        
+
+    
+
+
+.footer-sidebar
+    position: absolute
+    width: 30px
+    bottom: 0
+    left: 20px
+    padding: 10px 0
+
+    .item
+        display: block
+        margin: 10px 0
+        width: 20px
+        height: 20px
+        padding: 5px
+        +round(20px)
+
+        &:hover
+            background: rgba(30, 30, 30, .8)
+            
+
+        
+
+    
+
+
+
+
+
+.app-sidebar
+    position: relative
+    float: left
+    width: $app-sidebar__width
+    padding: 0
+    height: 100%
+
+    background: $app-sidebar__background
+
+    //background    : url('../images/pattern/handmadepaper.png') 0 0 repeat
+    //border        : 1px solid #fff
+    //+box-shadow(inset -15px 0 35px rgba(30, 30, 30, .10))
+    //background-color : #ece8df
+    //border-right  : 2px dashed #9a9899
+
+    border-radius: 3px 0 0 0
+    user-select: none
+
+
+    .item
+        display: block
+        margin: 0
+        padding: 15px
+
+        font-siz: 13px
+        color: #fff
+        text-shadow: 0 1px 0 #222
+
+        border-bottom: 1px solid #262626
+
+        &:first-child
+            margin-top: 10px
+            
+
+        
+
+
+
+
+.app-main
+    display: block
+    margin: 0 0 0 $app-main__offset
+    height: 100%
+
+    //position: absolute
+    //left: $app-main__offset
+    //right: 0
+    //top: 0
+    //bottom: 0
+    //background-color : #ece8df
+    //border-left      : 40px solid #ece8df
+    background-color: $app-main__background
+    border-left: 40px solid #fff
+    padding-right: 40px
+    overflow: hidden
+    overflow-y: scroll
+
+    
+
+#show_grid
+    display: inline-block
+    width: 940px
+    
+
+.container
+    // margin : 0 auto
+    
+
+
+    
+
+// @-moz-document url-prefix() 
+
+dev
+    position   : fixed
+    bottom     : 10px
+    right      : 21px
+    background : rgba(0, 0, 0, .75)
+    padding    : 10px 15px
+    color      : #fff
+    +round(5px)
+    z-index    : 1000
+
+    a
+        color : #fff
+        
+
+    
+
+
+
+//
+//example
+//    display    : inline-block
+//    width      : 400px
+//    margin     : 20px
+//    background : #2d2d2d
+//    color      : #afafaf
+//    border     : 1px solid rgba(0, 0, 0, 0.9)
+//
+//    +round(5px 5px 1px 1px)
+//    +box-shadow(0 1px 3px rgba(0, 0, 0, 0.1))
+//
+//    .legend
+//
+//        position      : relative
+//        display       : block
+//        padding       : 6px 12px 6px 60px
+//        text-shadow   : 0 -1px 0 #121212
+//        border-bottom : 1px solid #000000
+//
+//        +round(4px, top)
+//        +gradient-vertical(#333, #222)
+//        +box-shadow(inset 0 1px 0 rgba(255, 255, 255, 0.1))
+//
+//        &:before
+//            position   : absolute
+//            top        : 8px
+//            left       : 8px
+//            width      : 45px
+//            height     : 15px
+//
+//            background : url('../images/icons/icon/pre.png') 0 0 no-repeat
+//
+//            content    : ''
+//            
+//
+//        
+//
+//    
+
+
+
+
+
+
+
+
