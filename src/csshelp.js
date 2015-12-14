@@ -1,6 +1,11 @@
-var argv = require('yargs').argv;
 var colors = require('colors');
 var fs = require('fs');
+var program = require('commander');
+
+program
+    .option('-i, --include [STYLES]', 'Specify file with css')
+    .option('-s, --src     [STYLES]', 'Specify source')
+    .parse( process.argv );
 
 /**
  * Template for documentation file
@@ -22,11 +27,11 @@ var successMessage = colors.green('Success: Documentation generated, check: ' + 
 var includeArgError = colors.red('Error: You should specify file with css: --include [CSSFILE]');
 var srcArgError = colors.red('Error: You should specify source: --src [STYLES]');
 
-if ( !argv.include ) {
+if ( !program.include ) {
     return console.error( includeArgError );
 }
 
-if ( !argv.src ) {
+if ( !program.src ) {
     return console.error( srcArgError );
 }
 
@@ -114,7 +119,7 @@ CSSHelp.prototype.iterateComments = function ( comments ) {
         var title = this.getTitle( commentContent );
         var example = this.getExample( commentContent );
         var code = this.getCode( commentContent );
-        var group = this.getGroup( commentContent );
+        var group = this.getGroup( commentContent ) || 'General';
 
         /**
          * Exclude examples without @title or @example
@@ -123,15 +128,25 @@ CSSHelp.prototype.iterateComments = function ( comments ) {
             return;
         }
 
-        if ( group && !this.fileContent[ group ] ) {
+        if ( !this.fileContent[ group ] ) {
             this.fileContent[ group ] = '';
         }
 
-        this.fileContent[ group || 'General' ] += this.template.fileBlock
+        function prepareCodeExample( code ) {
+            return code.replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .split('\r\n')
+                .map( function( line ) { return '<li>' +  line + '</li>'; })
+                .join('\r\n');
+        }
+
+        this.fileContent[ group ] += this.template.fileBlock
             .replace('{{title}}', title )
+            .replace('{{visible}}', (( group === 'General' ) ? 'block' : 'none') )
+            .replace('{{link}}', group.toLowerCase() )
             .replace('{{code}}', (( code )
-                ? code.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                : example.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                ? prepareCodeExample( code )
+                : prepareCodeExample( example )
             ))
             .replace('{{example}}', example );
 
@@ -154,13 +169,17 @@ CSSHelp.prototype.process = function () {
  */
 CSSHelp.prototype.save = function () {
     var generatedContent = '';
+    var categoriesContent = '';
 
     for ( var group in this.fileContent ) {
         if ( !this.fileContent.hasOwnProperty( group ) ) {
             return
         }
 
-        generatedContent += this.template.headerBlock.replace('{{title}}', group );
+        categoriesContent += this.template.categoryBlock
+            .replace('{{title}}', group )
+            .replace('{{link}}', group.toLowerCase() );
+
         generatedContent += this.fileContent[ group ];
     }
 
@@ -169,6 +188,7 @@ CSSHelp.prototype.save = function () {
      */
     var generatedFile = this.template.fileTemplate
         .replace('{{include}}', this.styles )
+        .replace('{{categories}}', categoriesContent )
         .replace('{{content}}', generatedContent );
 
     fs.writeFileSync( config.generatedFile, generatedFile );
@@ -177,7 +197,7 @@ CSSHelp.prototype.save = function () {
 /**
  * Create CSSHelp instance
  */
-var csshelp = new CSSHelp( argv.include, argv.src, template );
+var csshelp = new CSSHelp( program.include, program.src, template );
 
 csshelp.process();
 

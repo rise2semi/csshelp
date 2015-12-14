@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": { "csshelp": "./index.js" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rise2semi/csshelp.git"
@@ -18,6 +19,6 @@
   "homepage": "https://github.com/rise2semi/csshelp#readme",
   "dependencies": {
     "colors": "^1.1.2",
-    "yargs": "^3.30.0"
+    "commander": "^2.9.0"
   }
 }
