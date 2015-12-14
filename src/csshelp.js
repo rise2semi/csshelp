@@ -2,46 +2,44 @@ var colors = require('colors');
 var fs = require('fs');
 var program = require('commander');
 
-program
-    .option('-i, --include [STYLES]', 'Specify file with css')
-    .option('-s, --src     [STYLES]', 'Specify source')
-    .parse( process.argv );
-
 /**
- * Template for documentation file
+ * Templates for documentation file
  */
-var template = require('./template');
+var templates = require('./template');
 
 /**
- * Configuration object
+ * Configuration
  */
 var config = {
-    generatedFile: 'csshelp.html'
+    generatedFile: 'csshelp.html',
+    templates: templates
 };
 
-var successMessage = colors.green('Success: Documentation generated, check: ' + config.generatedFile );
+/**
+ * Messages for success/failure cases
+ */
+var messages = {
+    successMessage: colors.green('Success: Documentation generated, check: csshelp.html'),
+    includeArgError: colors.red('Error: You should specify file with css: --styles <file>'),
+    srcArgError: colors.red('Error: You should specify source: --src <file>')
+};
 
 /**
- * Error messages for missing arguments
+ * Parse CLI options
+ * @type {{ styles: string, src: string }}
  */
-var includeArgError = colors.red('Error: You should specify file with css: --include [CSSFILE]');
-var srcArgError = colors.red('Error: You should specify source: --src [STYLES]');
-
-if ( !program.include ) {
-    return console.error( includeArgError );
-}
-
-if ( !program.src ) {
-    return console.error( srcArgError );
-}
+program
+    .option('--styles <file>', 'Specify CSS file, which will be added to the generated docs to render examples', null, null )
+    .option('--src    <file>', 'Specify source with comments for documentation', null, null )
+    .parse( process.argv );
 
 /**
  * Constructor
  */
-function CSSHelp( styles, src, template ) {
-    this.styles = styles;
-    this.src = src;
-    this.template = template;
+function CSSHelp( options ) {
+    this.styles = options.styles;
+    this.src = options.src;
+    this.template = options.templates;
 
     /**
      * Container for content
@@ -156,18 +154,20 @@ CSSHelp.prototype.iterateComments = function ( comments ) {
 /**
  * Process source
  */
-CSSHelp.prototype.process = function () {
+CSSHelp.prototype.process = function ( config, callback ) {
     var srcContent = this.getSrcContent();
     var comments = this.parseComments( srcContent );
 
     this.iterateComments( comments );
-    this.save();
+    this.save( config );
+
+    callback();
 };
 
 /**
  * Save generated file
  */
-CSSHelp.prototype.save = function () {
+CSSHelp.prototype.save = function ( config ) {
     var generatedContent = '';
     var categoriesContent = '';
 
@@ -195,10 +195,38 @@ CSSHelp.prototype.save = function () {
 };
 
 /**
- * Create CSSHelp instance
+ * Check required data
+ * @param {{ styles: string, src: string }} program
  */
-var csshelp = new CSSHelp( program.include, program.src, template );
+function checkOptions( program ) {
+    if ( !program.styles ) {
+        return console.error( messages.includeArgError );
+    }
 
-csshelp.process();
+    if ( !program.src ) {
+        return console.error( messages.srcArgError );
+    }
+}
 
-console.log( successMessage );
+/**
+ * Check required data
+ * @param {{ styles: string, src: string }} program
+ * @param {object} config
+ */
+function startProcess( program, config ) {
+    var csshelp = new CSSHelp({ styles: program.styles, src: program.src, templates: config.templates });
+
+    csshelp.process( config, function() {
+        console.log( messages.successMessage );
+    });
+}
+
+/**
+ * Check required data
+ */
+checkOptions( program );
+
+/**
+ * Start docs generation
+ */
+startProcess( program, config );
