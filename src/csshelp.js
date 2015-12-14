@@ -5,7 +5,7 @@ var program = require('commander');
 /**
  * Templates for documentation file
  */
-var templates = require('./template');
+var templates = require('csshelp-template');
 
 /**
  * Configuration
