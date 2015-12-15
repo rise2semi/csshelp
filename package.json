@@ -1,24 +1,24 @@
 {
   "name": "csshelp",
-  "version": "0.0.1",
-  "description": "CSSHelp",
+  "version": "0.1.0",
+  "description": "CSSHelp module for generation CSS documentation",
+  "author": "Borys Semerenko <rise2semi@gmail.com>",
+  "license": "MIT",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "csshelp": "index.js"
   },
-  "bin": { "csshelp": "./index.js" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rise2semi/csshelp.git"
   },
-  "author": "Borys Semerenko <rise2semi@gmail.com>",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rise2semi/csshelp/issues"
   },
-  "homepage": "https://github.com/rise2semi/csshelp#readme",
   "dependencies": {
     "colors": "^1.1.2",
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "csshelp-parser": "^0.1.0",
+    "csshelp-template": "^0.1.0"
   }
 }
